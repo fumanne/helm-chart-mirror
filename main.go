@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Marshal struct %s Failed, Error is %s\n", I, err)
 	}
-	if err := ioutil.WriteFile("./index.yaml", d, os.ModePerm); err != nil {
+	if err := ioutil.WriteFile("./docs/index.yaml", d, os.ModePerm); err != nil {
 		log.Fatalf("Write Index.yaml Failed, Error is %s\n", err)
 	}
 
