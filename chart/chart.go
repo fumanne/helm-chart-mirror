@@ -72,9 +72,7 @@ func (c *Chart) Download(wg *sync.WaitGroup) {
 }
 
 func (c *Chart) setUrl(prefix, name string) {
-	c.Urls = []string{
-		filepath.Join(prefix, name),
-	}
+	c.Urls = []string{prefix + name}
 }
 
 func prepare() string {
