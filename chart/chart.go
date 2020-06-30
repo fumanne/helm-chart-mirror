@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"errors"
 	"fmt"
 	"github.com/levigross/grequests"
 	"log"
@@ -14,7 +15,10 @@ import (
 	_ "github.com/mcuadros/go-version"
 )
 
-const DESTINATION = "docs"
+const (
+	DESTINATION = "docs"
+	MAXRETRY    = 5
+)
 
 var MIRROR_URL = fmt.Sprintf("https://%s.github.io/%s/", FetchGitEnv("GIT_USER", "fumanne"), FetchGitEnv("REPO_NAME", "helm-chart-mirror"))
 
@@ -44,11 +48,12 @@ type Index struct {
 	Generated  time.Time           `yaml:"generated"`
 }
 
-func (c *Chart) Download(wg *sync.WaitGroup) {
+func (c *Chart) Download(wg *sync.WaitGroup, maxChan chan bool) {
 	var u string
 	path := prepare()
 	defer wg.Done()
-
+	defer func(maxChan chan bool) { <-maxChan }(maxChan)
+	maxChan <- true
 	if len(c.Urls) > 1 {
 		i := rand.Intn(len(c.Urls))
 		u = c.Urls[i]
@@ -56,14 +61,12 @@ func (c *Chart) Download(wg *sync.WaitGroup) {
 		u = c.Urls[0]
 	}
 
-	log.Printf("Download url %s", u)
+	//log.Printf("Download url %s", u)
 	sliTarget := strings.Split(u, "/")
 	target := filepath.Join(path, sliTarget[len(sliTarget)-1])
 
-	resp, err := grequests.Get(u, nil)
-	if err != nil {
-		log.Fatalf("Download %s Failed, Error is %s\n", u, err)
-	}
+	resp, _ := _download(u, MAXRETRY)
+
 	if err := resp.DownloadToFile(target); err != nil {
 		log.Fatalf("Save File %s Failed, Error is %s\n", target, err)
 	}
@@ -85,4 +88,19 @@ func prepare() string {
 		log.Fatalf("Create Dir %s Failed, Error is %s\n", path, err)
 	}
 	return path
+}
+
+func _download(url string, retry int) (*grequests.Response, error) {
+	if retry == 0 {
+		log.Printf("Download %s Retry Count is Max\n", url)
+		return nil, errors.New("Max Count Reached!")
+	}
+	resp, err := grequests.Get(url, nil)
+	if err != nil {
+		log.Printf("Download  %s Failed, Error is %s\nTry Download it....Retry Count is %d \n", url, err, MAXRETRY-retry+1)
+		time.Sleep(10 * time.Second)
+		return _download(url, retry-1)
+	}
+	return resp, nil
+
 }

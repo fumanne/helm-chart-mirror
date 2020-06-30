@@ -10,11 +10,14 @@ import (
 	"sync"
 )
 
-const OFFICAL_URL = "https://kubernetes-charts.storage.googleapis.com/index.yaml"
+const (
+	OFFICAL_URL = "https://kubernetes-charts.storage.googleapis.com/index.yaml"
+	MAXFILE     = 2048
+)
 
 func main() {
 	var wg sync.WaitGroup
-
+	maxChan := make(chan bool, MAXFILE)
 	I := chart.Index{}
 	if err := yaml.Unmarshal(fetch.FetchIndexYaml(OFFICAL_URL), &I); err != nil {
 		log.Fatalf("Unmarshal struct %s Failed, Error is %s\n", I, err)
@@ -22,7 +25,7 @@ func main() {
 	for _, charts := range I.Entries {
 		for _, chart := range charts {
 			wg.Add(1)
-			go chart.Download(&wg)
+			go chart.Download(&wg, maxChan)
 		}
 	}
 	wg.Wait()
