@@ -25,6 +25,7 @@ func main() {
 	for _, charts := range I.Entries {
 		for _, chart := range charts {
 			wg.Add(1)
+			maxChan <- true
 			go chart.Download(&wg, maxChan)
 		}
 	}

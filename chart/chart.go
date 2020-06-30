@@ -53,7 +53,6 @@ func (c *Chart) Download(wg *sync.WaitGroup, maxChan chan bool) {
 	path := prepare()
 	defer wg.Done()
 	defer func(maxChan chan bool) { <-maxChan }(maxChan)
-	maxChan <- true
 	if len(c.Urls) > 1 {
 		i := rand.Intn(len(c.Urls))
 		u = c.Urls[i]
