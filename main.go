@@ -30,6 +30,7 @@ func main() {
 		}
 	}
 	wg.Wait()
+	I.SetGenerated()
 	d, err := yaml.Marshal(&I)
 	if err != nil {
 		log.Fatalf("Marshal struct %s Failed, Error is %s\n", I, err)

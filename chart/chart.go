@@ -77,7 +77,7 @@ func (c *Chart) setUrl(prefix, name string) {
 	c.Urls = []string{prefix + name}
 }
 
-func (i *Index) setGenerated() {
+func (i *Index) SetGenerated() {
 	i.Generated = time.Now()
 }
 
