@@ -77,6 +77,11 @@ func (c *Chart) setUrl(prefix, name string) {
 	c.Urls = []string{prefix + name}
 }
 
+func (i *Index) setGenerated() {
+	i.Generated = time.Now()
+}
+
+
 func prepare() string {
 	dir, err := os.Getwd()
 	if err != nil {
