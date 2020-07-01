@@ -97,7 +97,7 @@ func prepare() string {
 func _download(url string, retry int) (*grequests.Response, error) {
 	if retry == 0 {
 		log.Printf("Download %s Retry Count is Max\n", url)
-		return nil, errors.New("Max Count Reached!")
+		return nil, errors.New("max count reached")
 	}
 	resp, err := grequests.Get(url, nil)
 	if err != nil {
