@@ -102,7 +102,7 @@ func _download(url string, retry int) (*grequests.Response, error) {
 	resp, err := grequests.Get(url, nil)
 	if err != nil {
 		log.Printf("Download  %s Failed, Error is %s\nTry Download it....Retry Count is %d \n", url, err, MAXRETRY-retry+1)
-		time.Sleep(10 * time.Second)
+		//time.Sleep(3 * time.Second)
 		return _download(url, retry-1)
 	}
 	return resp, nil
