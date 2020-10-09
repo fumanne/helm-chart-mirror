@@ -12,7 +12,7 @@ import (
 
 const (
 	OFFICAL_URL = "https://kubernetes-charts.storage.googleapis.com/index.yaml"
-	MAXFILE = 2048
+	MAXFILE = 40
 )
 
 func main() {
